@@ -36,6 +36,7 @@ class CategoryRepository extends ServiceEntityRepository
     }
     */
 
+    /*
     public function findOneById($id): ?Category
     {
         return $this->createQueryBuilder('c')
@@ -45,4 +46,5 @@ class CategoryRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+    */
 }
