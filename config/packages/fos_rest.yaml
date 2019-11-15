@@ -13,6 +13,8 @@ fos_rest:
         exception_controller: 'fos_rest.exception.controller:showAction'
         codes:
             Doctrine\ORM\EntityNotFoundException: 404
+#    service:
+#        serializer: JMS\Serializer
 
 #    param_fetcher_listener:  true
 #    allowed_methods_listener:  true

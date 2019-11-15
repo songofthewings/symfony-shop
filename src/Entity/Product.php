@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
+ *
+ * @Serializer\ExclusionPolicy("all")
  */
 class Product
 {
@@ -15,16 +18,22 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     *
+     * @Serializer\Expose()
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Serializer\Expose()
      */
     private $title;
 
     /**
      * @ORM\Column(type="decimal", precision=6, scale=2)
+     *
+     * @Serializer\Expose()
      */
     private $price;
 

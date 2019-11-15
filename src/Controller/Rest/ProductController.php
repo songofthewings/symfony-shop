@@ -32,7 +32,8 @@ class ProductController extends AbstractFOSRestController
             throw new EntityNotFoundException("Category #{$categoryId} not found.");
         }
         $products = $category->getProducts();
-        return View::create($products, Response::HTTP_OK);
+        return View::create($products, Response::HTTP_OK)
+            ->setFormat($format);
     }
 
 }
