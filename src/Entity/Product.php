@@ -11,6 +11,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
  *
  * @Serializer\ExclusionPolicy("all")
+ * @Serializer\XmlRoot("product")
  */
 class Product
 {

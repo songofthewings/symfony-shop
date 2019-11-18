@@ -9,7 +9,9 @@ use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\Exception\UnsupportedFormatException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class ProductController extends AbstractFOSRestController
 {
@@ -26,6 +28,10 @@ class ProductController extends AbstractFOSRestController
      */
     public function getProducts(string $format, int $categoryId): View
     {
+        if (!in_array($format, ['json', 'xml'])) {
+            throw new UnsupportedFormatException("Unsupported format: {$format}.");
+        }
+
         $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
         $category = $categoryRepository->find($categoryId);
         if (empty($category)) {
