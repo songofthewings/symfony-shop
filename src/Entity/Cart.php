@@ -3,39 +3,98 @@
 
 namespace App\Entity;
 
-use JMS\Serializer\Annotation as Serializer;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class Cart
  * @package App\Entity
- * @Serializer\ExclusionPolicy("all")
+ *
+ * @ORM\Entity(repositoryClass="App\Repository\CartRepository")
+ *
  */
 class Cart
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
 
     /**
-     * @var array
+     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="cart")
      */
-    protected $products;
+    private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Product")
+     * @ORM\JoinTable(name="cart_products",
+     *     joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")}
+     * )
+     */
+    private $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        if ($this->products->contains($product)) {
+            $this->products->removeElement($product);
+        }
+
+        return $this;
+    }
 
     /**
      * @var array
      *
-     * @Serializer\Expose
-     * @Serializer\Type("array<int,int>")
-     * @ Serializer\Inline()
-     * @Serializer\Accessor(getter="getProductQuantities",setter="setProductQuantities")
-     */
+     * /
     protected $productQuantities = [];
 
     public function __construct()
     {
     }
 
-    /**
-     *
-     * @ Serializer\VirtualProperty(name="p")
-     */
     public function getProductQuantities()
     {
         return $this->productQuantities;
@@ -60,4 +119,6 @@ class Cart
     {
         return !empty($this->productQuantities[$product->getId()]);
     }
+     */
+
 }
