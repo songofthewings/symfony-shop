@@ -29,17 +29,25 @@ class Cart
     private $user;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Product")
-     * @ORM\JoinTable(name="cart_products",
-     *     joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")}
+     * @ ORM\ManyToMany(targetEntity="App\Entity\Product")
+     * @ ORM\JoinTable(name="cart_products",
+     *     joinColumns={@ ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ ORM\JoinColumn(name="cart_id", referencedColumnName="id")}
      * )
-     */
+     * /
     private $products;
+     * */
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CartProduct", mappedBy="cart")
+     */
+    private $cartProducts;
 
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->cartProducts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -86,6 +94,37 @@ class Cart
     }
 
     /**
+     * @return Collection|CartProduct[]
+     */
+    public function getCartProducts(): Collection
+    {
+        return $this->cartProducts;
+    }
+
+    public function addCartProduct(CartProduct $cartProduct): self
+    {
+        if (!$this->cartProducts->contains($cartProduct)) {
+            $this->cartProducts[] = $cartProduct;
+            $cartProduct->setCart($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCartProduct(CartProduct $cartProduct): self
+    {
+        if ($this->cartProducts->contains($cartProduct)) {
+            $this->cartProducts->removeElement($cartProduct);
+            // set the owning side to null (unless already changed)
+            if ($cartProduct->getCart() === $this) {
+                $cartProduct->setCart(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @var array
      *
      * /
@@ -115,10 +154,6 @@ class Cart
         $this->productQuantities[$product->getId()]++;
     }
 
-    public function contains(Product $product)
-    {
-        return !empty($this->productQuantities[$product->getId()]);
-    }
      */
 
 }
