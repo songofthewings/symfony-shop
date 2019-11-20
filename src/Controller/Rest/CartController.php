@@ -4,6 +4,7 @@
 namespace App\Controller\Rest;
 
 use App\Entity\Cart;
+use App\Entity\CartProduct;
 use App\Entity\Product;
 use App\Entity\User;
 use App\Repository\ProductRepository;
@@ -11,6 +12,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use Symfony\Component\HttpClient\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
@@ -47,15 +49,24 @@ class CartController extends AbstractFOSRestController
             throw new EntityNotFoundException("Product {$productId} not found.");
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
         $cart = $user->getCart();
         if (!$cart instanceof Cart) {
             $cart = new Cart();
             $cart->setUser($user);
         }
+        if ($cart->getProducts()->contains($product)) {
+            throw new InvalidArgumentException("Product #{$productId} is already in cart.");
+        }
+        $cartProduct = new CartProduct();
+        $cartProduct->setProduct($product);
+        $cartProduct->setQuantity(1);
+        $cart->addCartProduct($cartProduct);
 
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($cart);
+        $entityManager->persist($cartProduct);
+        $entityManager->flush();
 
-        //$cart->addProduct($product);
         $response = [
             'success' => 1,
         ];

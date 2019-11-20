@@ -34,9 +34,8 @@ class Cart
      *     joinColumns={@ ORM\JoinColumn(name="product_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ ORM\JoinColumn(name="cart_id", referencedColumnName="id")}
      * )
-     * /
+     */
     private $products;
-     * */
 
 
     /**
@@ -69,12 +68,19 @@ class Cart
 
     /**
      * @return Collection|Product[]
-     * /
+     */
     public function getProducts(): Collection
     {
+        if (is_null($this->products)) {
+            $this->products = new ArrayCollection();
+            foreach ($this->getCartProducts() as $cartProduct) {
+                $this->products->add($cartProduct->getProduct());
+            }
+        }
         return $this->products;
     }
 
+    /*
     public function addProduct(Product $product): self
     {
         if (!$this->products->contains($product)) {

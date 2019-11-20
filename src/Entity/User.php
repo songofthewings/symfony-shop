@@ -21,7 +21,7 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Cart", inversedBy="user")
+     * @ORM\OneToOne(targetEntity="App\Entity\Cart", mappedBy="user")
      */
     protected $cart;
 
