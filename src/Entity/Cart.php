@@ -46,7 +46,7 @@ class Cart
 
     public function __construct()
     {
-        $this->products = new ArrayCollection();
+        //$this->products = new ArrayCollection();
         $this->cartProducts = new ArrayCollection();
     }
 
@@ -69,7 +69,7 @@ class Cart
 
     /**
      * @return Collection|Product[]
-     */
+     * /
     public function getProducts(): Collection
     {
         return $this->products;
@@ -92,6 +92,7 @@ class Cart
 
         return $this;
     }
+     * */
 
     /**
      * @return Collection|CartProduct[]

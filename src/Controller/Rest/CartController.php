@@ -5,14 +5,15 @@ namespace App\Controller\Rest;
 
 use App\Entity\Cart;
 use App\Entity\Product;
+use App\Entity\User;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 class CartController extends AbstractFOSRestController
 {
@@ -22,7 +23,7 @@ class CartController extends AbstractFOSRestController
      * POST http://sshop.local/api/cart/product/5
      *
      * @Rest\Post("/cart/product/{productId}")
-     * ("/cart/product/{productId}/{cartCode}")
+     *
      * @param int $productId
      * @ param string|null $cartCode
      * @return View
@@ -30,20 +31,33 @@ class CartController extends AbstractFOSRestController
      */
     public function addProduct(int $productId/*, ?string $cartCode*/): View
     {
-        $cart = new Cart();
+        $token = $this->container->get('security.token_storage')->getToken();
+        if (empty($token)) {
+            throw new BadCredentialsException("No auth info.");
+        }
+
+        $user = $token->getUser();
+        if (!$user instanceof User || !$token->isAuthenticated()) {
+            throw new CustomUserMessageAuthenticationException("Not athenticated.");
+        }
+
         $productRepository = $this->getDoctrine()->getRepository(Product::class);
         $product = $productRepository->find($productId);
         if (empty($product)) {
             throw new EntityNotFoundException("Product {$productId} not found.");
         }
-        $cart->addProduct($product);
 
-        $serializer = SerializerBuilder::create()->build();
-        $jsonCart = $serializer->serialize($cart, 'json');
-        //$jsonCart = $serializer->serialize(/* $cart */[5=>1], 'json', SerializationContext::create()->setInitialType('array'));
+        $entityManager = $this->getDoctrine()->getManager();
+        $cart = $user->getCart();
+        if (!$cart instanceof Cart) {
+            $cart = new Cart();
+            $cart->setUser($user);
+        }
 
+
+        //$cart->addProduct($product);
         $response = [
-            'cart' => $jsonCart,
+            'success' => 1,
         ];
         return View::create($response, Response::HTTP_OK);
     }
@@ -71,7 +85,6 @@ class CartController extends AbstractFOSRestController
      */
     public function update(string $cartCode, int $productId, int $quantity): View
     {
-
     }
 
     /**
@@ -84,7 +97,6 @@ class CartController extends AbstractFOSRestController
      */
     public function delete(string $cartCode, int $productId): View
     {
-
     }
 
 
