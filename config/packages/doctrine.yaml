@@ -15,8 +15,8 @@ doctrine:
         url: '%env(resolve:DATABASE_URL)%'
         types:
             promotion_type:  App\Entity\DBAL\Types\PromotionType
-        #mapping_types:
-        #    enum: string
+        mapping_types:
+            enum: string
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore
