@@ -31,7 +31,7 @@ class CartController extends AbstractFOSRestController
      * @return View
      * @throws EntityNotFoundException
      */
-    public function addProduct(int $productId/*, ?string $cartCode*/): View
+    public function addProduct(int $productId): View
     {
         $token = $this->container->get('security.token_storage')->getToken();
         if (empty($token)) {
@@ -40,7 +40,7 @@ class CartController extends AbstractFOSRestController
 
         $user = $token->getUser();
         if (!$user instanceof User || !$token->isAuthenticated()) {
-            throw new CustomUserMessageAuthenticationException("Not athenticated.");
+            throw new CustomUserMessageAuthenticationException("Not authenticated.");
         }
 
         $productRepository = $this->getDoctrine()->getRepository(Product::class);
@@ -77,7 +77,7 @@ class CartController extends AbstractFOSRestController
     /**
      * Add Product to Cart resource
      *
-     * @Rest\Get("/cart/{cartCode}/get")
+     * @Rest\Get("/cart/get")
      * @param string $cartCode
      * @return View
      */
@@ -88,7 +88,7 @@ class CartController extends AbstractFOSRestController
     /**
      * Update Product in Cart
      *
-     * @Rest\Post("/cart/{cartCode}/update/{productId}/{quantity}")
+     * @Rest\Post("/cart/update/{productId}/{quantity}")
      * @param string $cartCode
      * @param int $productId
      * @param int $quantity
@@ -101,7 +101,7 @@ class CartController extends AbstractFOSRestController
     /**
      * Delete Product from Cart
      *
-     * @Rest\Delete("/cart/{cartCode}/delete/{productId}")
+     * @Rest\Delete("/cart/delete/{productId}")
      * @param string $cartCode
      * @param int $productId
      * @return View
@@ -114,7 +114,7 @@ class CartController extends AbstractFOSRestController
     /**
      * Get Cart total
      *
-     * @Rest\Get("/cart/{cartCode}/total/{promotionId}")
+     * @Rest\Get("/cart/total/{promotionId}")
      * @param string $cartCode
      * @param int $userId
      * @return View

@@ -27,6 +27,11 @@ class Promotion
     private $title;
 
     /**
+     * @ORM\Column(type="promotion_type")
+     */
+    private $type;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\PromotionOption", mappedBy="promotion")
      */
     private $promotionOptions;
