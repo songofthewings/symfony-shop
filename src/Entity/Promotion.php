@@ -89,4 +89,16 @@ class Promotion
         return $this;
     }
 
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType($type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
 }
