@@ -24,10 +24,12 @@ class CartProduct
     private $id;
 
     /**
+     * @ORM\JoinColumn(nullable=false)
      * @ORM\ManyToOne(targetEntity="App\Entity\Cart", inversedBy="cartProducts")
      */
     private $cart;
     /**
+     * @ORM\JoinColumn(nullable=false)
      * @ORM\ManyToOne(targetEntity="App\Entity\Product", inversedBy="cart")
      */
     private $product;

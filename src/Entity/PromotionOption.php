@@ -28,6 +28,7 @@ class PromotionOption
     private $value;
 
     /**
+     * @ORM\JoinColumn(nullable=false)
      * @ORM\ManyToOne(targetEntity="App\Entity\Promotion", inversedBy="promotionOptions")
      */
     private $promotion;

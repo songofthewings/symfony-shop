@@ -24,6 +24,7 @@ class Cart
     private $id;
 
     /**
+     * @ORM\JoinColumn(nullable=false)
      * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="cart")
      */
     private $user;
