@@ -8,6 +8,7 @@ use App\Entity\CartProduct;
 use App\Entity\Product;
 use App\Entity\User;
 use App\Repository\ProductRepository;
+use App\Service\CartFacade;
 use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -27,12 +28,13 @@ class CartController extends AbstractFOSRestController
      * @Rest\Post("/cart/product/{productId}")
      *
      * @param int $productId
-     * @ param string|null $cartCode
+     * @param CartFacade $cartFacade
      * @return View
      * @throws EntityNotFoundException
      */
-    public function addProduct(int $productId): View
+    public function addProduct(int $productId, CartFacade $cartFacade): View
     {
+        /*
         $token = $this->container->get('security.token_storage')->getToken();
         if (empty($token)) {
             throw new BadCredentialsException("No auth info.");
@@ -42,30 +44,9 @@ class CartController extends AbstractFOSRestController
         if (!$user instanceof User || !$token->isAuthenticated()) {
             throw new CustomUserMessageAuthenticationException("Not authenticated.");
         }
+        */
 
-        $productRepository = $this->getDoctrine()->getRepository(Product::class);
-        $product = $productRepository->find($productId);
-        if (empty($product)) {
-            throw new EntityNotFoundException("Product {$productId} not found.");
-        }
-
-        $cart = $user->getCart();
-        if (!$cart instanceof Cart) {
-            $cart = new Cart();
-            $cart->setUser($user);
-        }
-        if ($cart->getProducts()->contains($product)) {
-            throw new InvalidArgumentException("Product #{$productId} is already in cart.");
-        }
-        $cartProduct = new CartProduct();
-        $cartProduct->setProduct($product);
-        $cartProduct->setQuantity(1);
-        $cart->addCartProduct($cartProduct);
-
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($cart);
-        $entityManager->persist($cartProduct);
-        $entityManager->flush();
+        $cartFacade->addProduct($productId);
 
         $response = [
             'success' => 1,

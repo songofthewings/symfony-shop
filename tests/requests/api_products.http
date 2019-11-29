@@ -1,6 +1,8 @@
 GET http://sshop.local/api/xml/products/2
 
-http://sshop.local/api/json/products/2
+###
+
+GET http://sshop.local/api/json/products/2
 
 ###
 
