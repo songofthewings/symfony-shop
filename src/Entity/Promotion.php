@@ -32,6 +32,16 @@ class Promotion
     private $type;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $priority;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isGeneral;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\PromotionOption", mappedBy="promotion")
      */
     private $promotionOptions;

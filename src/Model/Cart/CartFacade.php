@@ -1,13 +1,16 @@
 <?php
 
 
-namespace App\Service;
+namespace App\Model\Cart;
 
 
 use App\Entity\Cart;
 use App\Entity\CartProduct;
 use App\Entity\Product;
 use App\Entity\User;
+use App\Model\Cart\Promotion\BaseHandler;
+use App\Model\Cart\Promotion\HandlerInterface;
+use App\Model\Cart\Promotion\PromotionBridgeFactory;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
@@ -72,7 +75,42 @@ class CartFacade
         $this->entityManager->persist($cart);
         $this->entityManager->persist($cartProduct);
         $this->entityManager->flush();
+    }
 
+
+    public function calculateTotal(): CartPricing
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            throw new AuthenticationException("No authenticated user.");
+        }
+        $promotions = $this->entityManager->getRepository('App:Promotion')
+            ->getPromotionsForUser($user->getId());
+
+
+        $cartPricing = new CartPricing();
+        /* get cart */
+
+        /**
+         * @var HandlerInterface $handlerPointer
+         * @var HandlerInterface $previousHandler
+         */
+        $handlerPointer = null;
+        $previousHandler = null;
+        foreach ($promotions as $promotion) {
+            $currentHandler = new BaseHandler(PromotionBridgeFactory::getPromotionBridge($promotion));
+            if (is_null($handlerPointer)) {
+                $handlerPointer = $currentHandler;
+            }
+            if (!is_null($previousHandler)) {
+                $previousHandler->setNext($currentHandler);
+            }
+            $previousHandler = $currentHandler;
+        }
+
+        $handlerPointer->handle($cartPricing);
+
+        return $cartPricing;
     }
 
 }
