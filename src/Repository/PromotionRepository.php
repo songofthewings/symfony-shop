@@ -26,8 +26,9 @@ class PromotionRepository extends ServiceEntityRepository
             ->addSelect('po') // to make Doctrine actually use the join
             ->innerJoin('p.promotionOptions', 'po', Join::WITH,
                     /* included * 'po.promotion_id = :promotion_id' */
-                    'po.user_id = :user_id OR p.is_general = 1'
+                    'po.user = :user_id OR p.isGeneral = 1'
                 )
+            ->orderBy('p.priority')
             //->where('po.promotion_id = :promotion_id')
             ->setParameter('user_id', $userId)
             ->getQuery();

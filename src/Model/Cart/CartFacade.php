@@ -16,6 +16,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\VarDumper\VarDumper;
 
 class CartFacade
 {
@@ -78,18 +79,16 @@ class CartFacade
     }
 
 
-    public function calculateTotal(): CartPricing
+    public function calculateTotal(User $user): CartPricing
     {
-        $user = $this->security->getUser();
-        if (!$user instanceof User) {
-            throw new AuthenticationException("No authenticated user.");
+        $cart = $user->getCart();
+        if (is_null($cart)) {
+            return 0;
         }
+        $cartPricing = $cart->getPricing();
+
         $promotions = $this->entityManager->getRepository('App:Promotion')
             ->getPromotionsForUser($user->getId());
-
-
-        $cartPricing = new CartPricing();
-        /* get cart */
 
         /**
          * @var HandlerInterface $handlerPointer

@@ -111,4 +111,28 @@ class Promotion
         return $this;
     }
 
+    public function getPriority(): ?int
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(int $priority): self
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+    public function getIsGeneral(): ?bool
+    {
+        return $this->isGeneral;
+    }
+
+    public function setIsGeneral(bool $isGeneral): self
+    {
+        $this->isGeneral = $isGeneral;
+
+        return $this;
+    }
+
 }

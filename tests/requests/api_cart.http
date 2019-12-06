@@ -1,4 +1,11 @@
 POST http://sshop.local/api/cart/product/5
-Cookie: PHPSESSID=0spvspnf17i1jlattnbnl0htd6
+Cookie: PHPSESSID=5n9uocc0b6ks7i9nopjr3gj5c1
 
 ###
+
+GET http://sshop.local/api/cart/total
+Cookie: PHPSESSID=5n9uocc0b6ks7i9nopjr3gj5c1
+
+###
+
+

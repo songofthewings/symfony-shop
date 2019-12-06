@@ -17,6 +17,7 @@ use Symfony\Component\HttpClient\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\Security\Core\Security;
 
 class CartController extends AbstractFOSRestController
 {
@@ -95,13 +96,25 @@ class CartController extends AbstractFOSRestController
     /**
      * Get Cart total
      *
-     * @Rest\Get("/cart/total/{promotionId}")
-     * @param string $cartCode
-     * @param int $userId
+     * @Rest\Get("/cart/total")
+     * @param Security $security
+     * @param CartFacade $cartFacade
      * @return View
      */
-    public function total(string $cartCode, int $userId): View
+    public function total(Security $security, CartFacade $cartFacade): View
     {
+
+        $user = $security->getUser();
+        if (!$user instanceof User) {
+            throw new AuthenticationException("No authenticated user.");
+        }
+        $cartPricing = $cartFacade->calculateTotal($user);
+
+        $response = [
+            'success' => 1,
+            'total' => $cartPricing,
+        ];
+        return View::create($response, Response::HTTP_OK);
     }
 
 }
