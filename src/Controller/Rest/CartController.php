@@ -59,36 +59,42 @@ class CartController extends AbstractFOSRestController
     /**
      * Add Product to Cart resource
      *
-     * @Rest\Get("/cart/get")
-     * @param string $cartCode
+     * @Rest\Get("/cart")
      * @return View
      */
-    public function get(string $cartCode): View
+    public function show(): View
     {
     }
 
     /**
-     * Update Product in Cart
+     * Update Product quantity in Cart
      *
-     * @Rest\Post("/cart/update/{productId}/{quantity}")
-     * @param string $cartCode
+     * -- if PUT need to create
+     * @Rest\Patch("/cart/products/{productId}/{quantity}")
      * @param int $productId
      * @param int $quantity
+     * @param CartFacade $cartFacade
      * @return View
+     * @throws EntityNotFoundException
      */
-    public function update(string $cartCode, int $productId, int $quantity): View
+    public function update(int $productId, int $quantity, CartFacade $cartFacade): View
     {
+        $cartFacade->updateQuantity($productId, $quantity);
+
+        $response = [
+            'success' => 1,
+        ];
+        return View::create($response, Response::HTTP_OK);
     }
 
     /**
      * Delete Product from Cart
      *
      * @Rest\Delete("/cart/delete/{productId}")
-     * @param string $cartCode
      * @param int $productId
      * @return View
      */
-    public function delete(string $cartCode, int $productId): View
+    public function delete(int $productId): View
     {
     }
 
