@@ -4,6 +4,8 @@
 namespace App\Model\Cart\Promotion;
 
 
+use App\Entity\PromotionOption;
+use App\Entity\User;
 use App\Model\Cart\CartPricing;
 
 class AccountDiscount extends BasePromotionBridge implements PromotionCalculationBridge
@@ -11,11 +13,13 @@ class AccountDiscount extends BasePromotionBridge implements PromotionCalculatio
 
     public function canBeApplied(CartPricing $context): bool
     {
-        // TODO: Implement canBeApplied() method.
+        return $context->getTotal() > 0.0001
+            && $context->getUserId() == $this->getUserId();
     }
 
     public function apply(CartPricing $context): void
     {
-        // TODO: Implement apply() method.
+        $context->applyDiscount($this->getOptionValue('discount'));
     }
+
 }

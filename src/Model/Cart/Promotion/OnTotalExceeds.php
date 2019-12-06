@@ -11,11 +11,11 @@ class OnTotalExceeds extends BasePromotionBridge implements PromotionCalculation
 
     public function canBeApplied(CartPricing $context): bool
     {
-        // TODO: Implement canBeApplied() method.
+        return $context->getTotal() > $this->getOptionValue('amount');
     }
 
     public function apply(CartPricing $context): void
     {
-        // TODO: Implement apply() method.
+        $context->applyDiscount($this->getOptionValue('discount'));
     }
 }

@@ -101,4 +101,19 @@ class CartPricing
         return $this->calculatedTotal;
     }
 
+    public function getUserId(): int
+    {
+        return $this->cart->getUser()->getId();
+    }
+
+    public function getProductPrices(): array
+    {
+        return $this->productPrices;
+    }
+
+    public function getFreeProducts(): array
+    {
+        return $this->freeProducts;
+    }
+
 }

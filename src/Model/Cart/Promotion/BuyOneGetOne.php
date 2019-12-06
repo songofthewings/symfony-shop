@@ -11,11 +11,17 @@ class BuyOneGetOne extends BasePromotionBridge implements PromotionCalculationBr
 
     public function canBeApplied(CartPricing $context): bool
     {
-        // TODO: Implement canBeApplied() method.
+        $productId = intval($this->getOptionValue('product_id'));
+        $paidProductCount = $context->getProductPrices()[$productId]['count'] ?? 0;
+        $freeProductCount = $context->getFreeProducts()[$productId] ?? 0;
+        return $paidProductCount - $freeProductCount >= 2;
     }
 
     public function apply(CartPricing $context): void
     {
-        // TODO: Implement apply() method.
+        $productId = intval($this->getOptionValue('product_id'));
+        while ($this->canBeApplied($context)) {
+            $context->setProductFree($productId);
+        }
     }
 }
