@@ -96,6 +96,7 @@ class CartPricing
             foreach ($this->discountsApplied as $discountPercent) {
                 $total -= $total * $discountPercent / 100;
             }
+            $this->calculatedTotal = $total;
         }
 
         return $this->calculatedTotal;
@@ -114,6 +115,11 @@ class CartPricing
     public function getFreeProducts(): array
     {
         return $this->freeProducts;
+    }
+
+    public function getDiscountsApplied(): array
+    {
+        return $this->discountsApplied;
     }
 
 }

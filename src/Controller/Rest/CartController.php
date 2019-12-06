@@ -112,7 +112,13 @@ class CartController extends AbstractFOSRestController
 
         $response = [
             'success' => 1,
-            'total' => $cartPricing,
+            'total' => $cartPricing->getTotal(),
+            'detailedTotal' => [
+                'product_prices' => $cartPricing->getProductPrices(),
+                'free_products' => $cartPricing->getFreeProducts(),
+                'products_total' => $cartPricing->getTotalByProducts(),
+                'discounts_applied' => $cartPricing->getDiscountsApplied(),
+            ]
         ];
         return View::create($response, Response::HTTP_OK);
     }
