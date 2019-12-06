@@ -79,22 +79,29 @@ class CartFacade
     }
 
 
+    public function getContent()
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            throw new AuthenticationException("No authenticated user.");
+        }
+        $cart = $user->getCart();
+        if (!$cart instanceof Cart) {
+            return [];
+        }
+    }
+
     /**
      * Update Product quantity in Cart
      *
      * @param int $productId
      * @param int $quantity
-     * @throws EntityNotFoundException
      */
     public function updateQuantity(int $productId, int $quantity): void
     {
         $user = $this->security->getUser();
         if (!$user instanceof User) {
             throw new AuthenticationException("No authenticated user.");
-        }
-        $product = $this->productRepository->find($productId);
-        if (empty($product)) {
-            throw new EntityNotFoundException("Product #{$productId} not found.");
         }
         if ($quantity < 1) {
             throw new \InvalidArgumentException("Product quantity should be > 0.");
@@ -103,17 +110,42 @@ class CartFacade
         if (!$cart instanceof Cart) {
             throw new \BadMethodCallException("Cart is empty.");
         }
-        if (!$cart->getProducts()->contains($product)) {
-            throw new \BadMethodCallException("Product #{$productId} isn't in cart.");
-        }
         foreach ($cart->getCartProducts() as $cartProduct) {
             if ($cartProduct->getProduct()->getId() == $productId) {
                 $cartProduct->setQuantity($quantity);
                 $this->entityManager->persist($cartProduct);
                 $this->entityManager->flush();
-                break;
+                return;
             }
         }
+        throw new \BadMethodCallException("Product #{$productId} isn't in cart.");
+    }
+
+
+    /**
+     * Remove Product from Cart
+     *
+     * @param int $productId
+     */
+    public function removeProduct(int $productId): void
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            throw new AuthenticationException("No authenticated user.");
+        }
+        $cart = $user->getCart();
+        if (!$cart instanceof Cart) {
+            throw new \BadMethodCallException("Cart is empty.");
+        }
+        foreach ($cart->getCartProducts() as $cartProduct) {
+            if ($cartProduct->getProduct()->getId() == $productId) {
+                $cart->getCartProducts()->removeElement($cartProduct);
+                $this->entityManager->persist($cart);
+                $this->entityManager->flush();
+                return;
+            }
+        }
+        throw new \BadMethodCallException("Product #{$productId} isn't in cart.");
     }
 
 

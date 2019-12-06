@@ -92,10 +92,17 @@ class CartController extends AbstractFOSRestController
      *
      * @Rest\Delete("/cart/delete/{productId}")
      * @param int $productId
+     * @param CartFacade $cartFacade
      * @return View
      */
-    public function delete(int $productId): View
+    public function delete(int $productId, CartFacade $cartFacade): View
     {
+        $cartFacade->removeProduct($productId);
+
+        $response = [
+            'success' => 1,
+        ];
+        return View::create($response, Response::HTTP_OK);
     }
 
 
