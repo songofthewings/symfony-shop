@@ -8,4 +8,9 @@ Cookie: PHPSESSID=pj294r19f0k2odlo1na4gchth2
 
 ###
 
+GET http://sshop.local/api/cart
+Cookie: PHPSESSID=4j84pdk4kj2ubuollepvoc197u
+
+###
+
 

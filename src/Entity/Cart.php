@@ -47,7 +47,6 @@ class Cart
 
     public function __construct()
     {
-        //$this->products = new ArrayCollection();
         $this->cartProducts = new ArrayCollection();
     }
 

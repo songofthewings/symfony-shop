@@ -12,6 +12,7 @@ use App\Model\Cart\Promotion\BaseHandler;
 use App\Model\Cart\Promotion\HandlerInterface;
 use App\Model\Cart\Promotion\PromotionBridgeFactory;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -79,7 +80,7 @@ class CartFacade
     }
 
 
-    public function getContent()
+    public function getContent(): \ArrayAccess
     {
         $user = $this->security->getUser();
         if (!$user instanceof User) {
@@ -87,8 +88,21 @@ class CartFacade
         }
         $cart = $user->getCart();
         if (!$cart instanceof Cart) {
-            return [];
+            return new \ArrayObject();
         }
+
+        return $cart->getCartProducts()->map(
+            function ($cartProduct) {
+                /**
+                 * @var CartProduct $cartProduct
+                 */
+                return [
+                    'product_id' => $cartProduct->getProduct()->getId(),
+                    'quantity' => $cartProduct->getQuantity(),
+                    'price' => $cartProduct->getProduct()->getPrice(),
+                ];
+            }
+        );
     }
 
     /**

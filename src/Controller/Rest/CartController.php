@@ -60,10 +60,16 @@ class CartController extends AbstractFOSRestController
      * Add Product to Cart resource
      *
      * @Rest\Get("/cart")
+     * @param CartFacade $cartFacade
      * @return View
      */
-    public function show(): View
+    public function show(CartFacade $cartFacade): View
     {
+        $response = [
+            'success' => 1,
+            'cart' => $cartFacade->getContent(),
+        ];
+        return View::create($response, Response::HTTP_OK);
     }
 
     /**
