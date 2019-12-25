@@ -14,5 +14,4 @@ interface PromotionCalculationBridge
     public function canBeApplied(CartPricing $context): bool;
 
     public function apply(CartPricing $context): void;
-
 }

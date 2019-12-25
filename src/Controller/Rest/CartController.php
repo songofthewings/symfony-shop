@@ -9,6 +9,8 @@ use App\Entity\Product;
 use App\Entity\User;
 use App\Model\Cart\CartFacade;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -27,31 +29,40 @@ class CartController extends AbstractFOSRestController
      * POST http://sshop.local/api/cart/product/5
      *
      * @Rest\Post("/cart/product/{productId}")
+     * @Rest\Post("/cart/product/{productId}/{quantity}")
      *
      * @param int $productId
-     * @param CartFacade $cartFacade
+     * @param int $quantity
+     * @param ProductRepository $productRepository
+     * @param ObjectManager $entityManager
+     *
      * @return View
+     *
      * @throws EntityNotFoundException
+     * @throws \Doctrine\ORM\ORMException
      */
-    public function addProduct(int $productId, CartFacade $cartFacade): View
-    {
-        /*
-        $token = $this->container->get('security.token_storage')->getToken();
-        if (empty($token)) {
-            throw new BadCredentialsException("No auth info.");
+    public function addProduct(
+        int $productId,
+        int $quantity,
+        ProductRepository $productRepository,
+        ObjectManager $entityManager
+    ): View {
+        /** @var User $user */
+        $user = $this->getUser();
+        $product = $productRepository->find($productId);
+
+        if (!$product) {
+            throw new EntityNotFoundException("Product #{$productId} not found.");
         }
 
-        $user = $token->getUser();
-        if (!$user instanceof User || !$token->isAuthenticated()) {
-            throw new CustomUserMessageAuthenticationException("Not authenticated.");
-        }
-        */
-
-        $cartFacade->addProduct($productId);
+        $cart = $user->getCart();
+        $cart->updateProducts($product, $quantity);
+        $entityManager->persist($cart);
 
         $response = [
-            'success' => 1,
+            'success' => true,
         ];
+
         return View::create($response, Response::HTTP_OK);
     }
 
@@ -72,26 +83,26 @@ class CartController extends AbstractFOSRestController
         return View::create($response, Response::HTTP_OK);
     }
 
-    /**
-     * Update Product quantity in Cart
-     *
-     * -- if PUT need to create
-     * @Rest\Patch("/cart/products/{productId}/{quantity}")
-     * @param int $productId
-     * @param int $quantity
-     * @param CartFacade $cartFacade
-     * @return View
-     * @throws EntityNotFoundException
-     */
-    public function update(int $productId, int $quantity, CartFacade $cartFacade): View
-    {
-        $cartFacade->updateQuantity($productId, $quantity);
-
-        $response = [
-            'success' => 1,
-        ];
-        return View::create($response, Response::HTTP_OK);
-    }
+//    /**
+//     * Update Product quantity in Cart
+//     *
+//     * -- if PUT need to create
+//     * @Rest\Patch("/cart/products/{productId}/{quantity}")
+//     * @param int $productId
+//     * @param int $quantity
+//     * @param CartFacade $cartFacade
+//     * @return View
+//     * @throws EntityNotFoundException
+//     */
+//    public function update(int $productId, int $quantity, CartFacade $cartFacade): View
+//    {
+//        $cartFacade->updateQuantity($productId, $quantity);
+//
+//        $response = [
+//            'success' => 1,
+//        ];
+//        return View::create($response, Response::HTTP_OK);
+//    }
 
     /**
      * Delete Product from Cart
@@ -122,11 +133,11 @@ class CartController extends AbstractFOSRestController
      */
     public function total(Security $security, CartFacade $cartFacade): View
     {
-
         $user = $security->getUser();
         if (!$user instanceof User) {
             throw new AuthenticationException("No authenticated user.");
         }
+
         $cartPricing = $cartFacade->calculateTotal($user);
 
         $response = [

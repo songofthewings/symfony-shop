@@ -81,26 +81,6 @@ class Cart
         return $this->products;
     }
 
-    /*
-    public function addProduct(Product $product): self
-    {
-        if (!$this->products->contains($product)) {
-            $this->products[] = $product;
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->products->contains($product)) {
-            $this->products->removeElement($product);
-        }
-
-        return $this;
-    }
-     * */
-
     /**
      * @return Collection|CartProduct[]
      */
@@ -138,35 +118,30 @@ class Cart
     }
 
     /**
-     * @var array
+     * Add Product to cart
      *
-     * /
-    protected $productQuantities = [];
-
-    public function __construct()
-    {
-    }
-
-    public function getProductQuantities()
-    {
-        return $this->productQuantities;
-    }
-
-    public function setProductQuantities($productQuantities)
-    {
-        $this->productQuantities = $productQuantities;
-    }
-
-
-    public function addProduct(Product $product)
-    {
-        if (!isset($this->productQuantities[$product->getId()])) {
-            $this->productQuantities[$product->getId()] = 0;
-            $this->products[$product->getId()] = $product;
-        }
-        $this->productQuantities[$product->getId()]++;
-    }
-
+     * @param Product $product
+     * @param int $quantity
      */
+    public function updateProducts(Product $product, int $quantity = 1): void
+    {
+        $targetCartProduct = null;
 
+        /** @var CartProduct $cartProduct */
+        foreach ($this->cartProducts as $cartProduct) {
+            if ($cartProduct->getProduct()->getId() == $product->getId()) {
+                $targetCartProduct = $cartProduct;
+                break;
+            }
+        }
+
+        if (!$targetCartProduct) {
+            $targetCartProduct = new CartProduct();
+            $targetCartProduct
+                ->setCart($this)
+                ->setProduct($product);
+        }
+
+        $targetCartProduct->changeQuantity($quantity);
+    }
 }

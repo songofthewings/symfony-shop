@@ -25,6 +25,15 @@ security:
             logout: true
             anonymous: true
             # access_denied_handler: App\Security\AccessDeniedHandler
+#        api:
+#            pattern: ^/api/
+#            form_login:
+#                provider: fos_userbundle
+#                csrf_token_generator: security.csrf.token_manager
+#
+#            logout: true
+#            anonymous: false
+#            access_denied_handler: App\Security\AccessDeniedHandler
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

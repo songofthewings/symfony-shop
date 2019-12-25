@@ -114,16 +114,20 @@ class CartFacade
     public function updateQuantity(int $productId, int $quantity): void
     {
         $user = $this->security->getUser();
+
         if (!$user instanceof User) {
             throw new AuthenticationException("No authenticated user.");
         }
+
         if ($quantity < 1) {
             throw new \InvalidArgumentException("Product quantity should be > 0.");
         }
+
         $cart = $user->getCart();
         if (!$cart instanceof Cart) {
             throw new \BadMethodCallException("Cart is empty.");
         }
+
         foreach ($cart->getCartProducts() as $cartProduct) {
             if ($cartProduct->getProduct()->getId() == $productId) {
                 $cartProduct->setQuantity($quantity);
@@ -132,6 +136,7 @@ class CartFacade
                 return;
             }
         }
+
         throw new \BadMethodCallException("Product #{$productId} isn't in cart.");
     }
 
@@ -167,11 +172,13 @@ class CartFacade
     {
         $cart = $user->getCart();
         if (is_null($cart)) {
-            return 0;
+            throw new \Exception('AAAAAAA');
         }
+
         $cartPricing = $cart->getPricing();
 
-        $promotions = $this->entityManager->getRepository('App:Promotion')
+        $promotions = $this->entityManager
+            ->getRepository('App:Promotion')
             ->getPromotionsForUser($user->getId());
 
         /**
@@ -180,14 +187,18 @@ class CartFacade
          */
         $handlerPointer = null;
         $previousHandler = null;
+
         foreach ($promotions as $promotion) {
             $currentHandler = new BaseHandler(PromotionBridgeFactory::getPromotionBridge($promotion));
+
             if (is_null($handlerPointer)) {
                 $handlerPointer = $currentHandler;
             }
+
             if (!is_null($previousHandler)) {
                 $previousHandler->setNext($currentHandler);
             }
+
             $previousHandler = $currentHandler;
         }
 
@@ -195,5 +206,4 @@ class CartFacade
 
         return $cartPricing;
     }
-
 }

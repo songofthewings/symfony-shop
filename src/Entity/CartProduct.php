@@ -38,7 +38,7 @@ class CartProduct
     /**
      * @ORM\Column(type="integer")
      */
-    private $quantity;
+    private $quantity = 0;
 
     public function getId(): ?int
     {
@@ -53,6 +53,14 @@ class CartProduct
     public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    public function changeQuantity(int $quantity): self
+    {
+        $this->quantity += $quantity;
+        $this->quantity = max($this->quantity, 0);
 
         return $this;
     }

@@ -13,7 +13,9 @@ class AccessDeniedHandler implements AccessDeniedHandlerInterface
     public function handle(Request $request, AccessDeniedException $accessDeniedException)
     {
 
-        //die('*****');
+        die('*AccessDeniedHandler****');
+        $content = 'No authorized user.';
+        //return new Response($content, 403);
         //return (new Response($content, 403))->;
     }
 }

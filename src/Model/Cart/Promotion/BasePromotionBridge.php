@@ -20,16 +20,33 @@ abstract class BasePromotionBridge implements PromotionCalculationBridge
         $this->promotion = $promotion;
     }
 
+    /**
+     * @param string $optionName
+     * @return string
+     * @throws \Exception
+     */
     protected function getOptionValue(string $optionName): string
     {
+        $value = null;
+
         foreach ($this->promotion->getPromotionOptions() as $promotionOption) {
             if ($promotionOption->getName() == $optionName) {
-                return $promotionOption->getValue();
+                $value = $promotionOption->getValue();
+                break;
             }
         }
-        throw new DatabaseObjectNotFoundException(
-            "Promotion Option '$optionName' not found for promotion #{$this->promotion->getId()}."
-        );
+
+        if (is_null($value)) {
+            throw new \Exception(
+                sprintf(
+                    "Promotion Option '%s' not found for promotion #%s.",
+                    $optionName,
+                    $this->promotion->getId()
+                )
+            );
+        }
+
+        return $value;
     }
 
     protected function getUserId(): ?int
@@ -41,5 +58,4 @@ abstract class BasePromotionBridge implements PromotionCalculationBridge
         }
         return null;
     }
-
 }

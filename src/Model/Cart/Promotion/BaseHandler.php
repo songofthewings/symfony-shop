@@ -38,5 +38,4 @@ use App\Model\Cart\CartPricing;
     {
         $this->nextHandler = $handler;
     }
-
 }

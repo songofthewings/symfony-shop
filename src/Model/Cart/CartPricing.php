@@ -12,18 +12,22 @@ class CartPricing
      * @var Cart
      */
     protected $cart;
+
     /**
      * @var array(product_id => [price=>price, quantity=>quantity])
      */
     protected $productPrices;
+
     /**
      * @var array(product_id => quantity)
      */
     protected $freeProducts = [];
+
     /**
      * @var float Total amount calculated by product prices.
      */
     protected $totalByProducts;
+
     /**
      * @var array[int] Discount values applied to Cart
      */
@@ -59,14 +63,20 @@ class CartPricing
         return $this->totalByProducts;
     }
 
+    /**
+     *
+     *
+     * @param int $productId
+     */
     public function setProductFree(int $productId): void
     {
         if (empty($this->productPrices[$productId]['quantity'])) {
             throw new \UnexpectedValueException("Product #$productId is not in cart.");
         }
+
         $this->productPrices[$productId]['quantity']--;
         if ($this->productPrices[$productId]['quantity'] == 0) {
-            uset($this->productPrices[$productId]);
+            unset($this->productPrices[$productId]);
         }
 
         $this->freeProducts[$productId] = $this->freeProducts[$productId] ?? 0;
